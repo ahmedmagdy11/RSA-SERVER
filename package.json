@@ -1,0 +1,26 @@
+{
+  "name": "rsa_server",
+  "version": "1.0.0",
+  "description": "RSA server",
+  "main": "app.js ",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahmedmagdy11/RSA-SERVER.git"
+  },
+  "keywords": [
+    "security",
+    "rsa"
+  ],
+  "author": "Ahmedmagdy11",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ahmedmagdy11/RSA-SERVER/issues"
+  },
+  "homepage": "https://github.com/ahmedmagdy11/RSA-SERVER#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
