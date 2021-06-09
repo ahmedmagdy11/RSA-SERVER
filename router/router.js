@@ -1,20 +1,21 @@
 const {Router} = require("express");
-const {publicKey, privateKey} = require("../generateKeys");
+const {getkey} = require("../generateKeys");
 const crypto = require("crypto");
-const { decodedBase64 } = require("../helpers");
 const router = Router();
 
 
 /**
  * @todo Finish the decryption part 
  * @todo Add CronJob to generate new keys every 3 or 2 days;
+ * @todo Add public and private key to each server
  */
 router.get("/public",(req,res)=>{
     try{
-        const key = publicKey.export({
-            format: "pem",
-            type : "pkcs1"
-        });
+        const server_number = req.query.server;
+        if (!server_number){
+            throw new Error("expected server number");
+        } 
+        const key = getkey (server_number, "public"); 
         return res.send({
             public_key:  key
         }); 
