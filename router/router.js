@@ -32,8 +32,18 @@ router.post("/decrypt",(req,res)=>{
             throw new Error("Data doesn't exist");
         }
         const encryptedData = Buffer.from(data,"base64");
+        const server_number = req.query.server; 
+        if (!server_number){
+            throw new Error("expected server number");
+        }
+          
+        const privateKey = getkey(server_number, "private");
+        if (!privateKey){
+            throw new Error(`Server ${server_number} doesn't have keys`);
+        }
+        console.log(privateKey);
         const decryptedData = crypto.privateDecrypt({
-            key: privateKey,
+            key: privateKey.toString(),
             padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
             oaepHash: "sha256",
         }, encryptedData);

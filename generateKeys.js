@@ -11,14 +11,14 @@ function generatePublicAndPrivateKeys(server_number) {
             throw new Error("expected server_number to be a number");
         }
         const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
-            modulusLength: 2048
+            modulusLength: 2048,
         });
         const public_key = publicKey.export({ format: "pem", type: "pkcs1" });
-        const private_key = privateKey.export({ format: "pem", type: "pkcs1" });
+        const private_key = privateKey.export({ format: "pem", type: "pkcs1"});
 
         // if directory doesn't exist mkdir;
 
-        !fs.existsSync(`keys/${server_number}`) ? fs.mkdirSync(`keys/${server_number}`) : null;
+        !fs.existsSync(`keys/${server_number}`) ? fs.mkdirSync(`keys/${server_number}`, { recursive: true }) : null;
 
         fs.writeFileSync(`keys/${server_number}/public_key.pem`, public_key, { encoding: "utf-8" });
         fs.writeFileSync(`keys/${server_number}/private_key.pem`, private_key, { encoding: "utf-8" });
@@ -36,7 +36,8 @@ function getkey(server_number, keyType = "public") {
         }
 
         // if key doesn't exist generate it :)
-        if (!fs.existsSync(`keys/${server_number}/${keyType}_key.pem`)) {
+        // also the request must be coming for public keys => can't request private before public
+        if (!fs.existsSync(`keys/${server_number}/${keyType}_key.pem` && keyType == "public")) {
             if (!generatePublicAndPrivateKeys(server_number)) {
                 // Throw an Error incase of failure;
                 throw new Error("Failed to generate keys");
