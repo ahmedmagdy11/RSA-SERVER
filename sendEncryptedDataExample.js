@@ -7,11 +7,11 @@
 const axios = require("axios").default;
 const crypto = require("crypto");
 const fs = require("fs");
-const {decodedBase64} = require("./helpers");
+
 // STEP1 =========== Get public Key and store it in a file
 async function getPublicAndStoreIt() {
     try{
-        const public = await axios.get("http://localhost:5000/public?server=2");
+        const public = await axios.get("http://localhost:5000/public?server=3");
         const public_key = public.data?.public_key;
         fs.writeFileSync("public_key.pem", public_key, { encoding: "utf-8" }, (err) => {
             if (err) {
@@ -55,7 +55,7 @@ function usePublicKeyToEncryptData(){
  
 async function sendEncryptedDataBackToserver (encryptedData){
     try{
-        await axios.post("http://localhost:5000/decrypt?server=2",{data : encryptedData},{
+        await axios.post("http://localhost:5000/decrypt?server=3",{data : encryptedData},{
             headers : {
                 "Content-Type" : "application/json"
             }

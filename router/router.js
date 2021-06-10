@@ -38,19 +38,20 @@ router.post("/decrypt",(req,res)=>{
         }
           
         const privateKey = getkey(server_number, "private");
+
         if (!privateKey){
             throw new Error(`Server ${server_number} doesn't have keys`);
         }
-        console.log(privateKey);
+
         const decryptedData = crypto.privateDecrypt({
-            key: privateKey.toString(),
+            key: privateKey,
             padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
             oaepHash: "sha256",
         }, encryptedData);
         console.log(decryptedData.toString("ascii"));
         return res.sendStatus(200);
     }catch(e){
-        console.log(e);
+        console.log(e.message);
         res.status(400).send({message : "Something went wrong while decrypting the data"});
     }   
 });
