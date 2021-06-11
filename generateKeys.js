@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const fs = require("fs");
+const { deleteKeysJob } = require("./deleteKeysJob");
 
 
 function generatePublicAndPrivateKeys(server_number) {
@@ -10,9 +11,6 @@ function generatePublicAndPrivateKeys(server_number) {
         const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
             modulusLength: 2048,
         });
-        console.log("======================================");
-        console.log(privateKey);
-        console.log("======================================");
         const public_key = publicKey.export({ format: "pem", type: "pkcs1" });
         const private_key = privateKey.export({ format: "pem", type: "pkcs1" });
 
@@ -22,6 +20,9 @@ function generatePublicAndPrivateKeys(server_number) {
 
         fs.writeFileSync(`keys/${server_number}/public_key.pem`, public_key, { encoding: "utf-8" });
         fs.writeFileSync(`keys/${server_number}/private_key.pem`, private_key, { encoding: "utf-8" });
+        const TimeToDeleteFiles = new Date();
+        // tweak this number from env variables as you wish i suggest keeping at 1 to 3 days range
+        deleteKeysJob(TimeToDeleteFiles.setDate(TimeToDeleteFiles.getDate() + process.env.DAYS_TO_EXPIRE), server_number);
         return true;
     } catch (e) {
         console.log(e);
@@ -40,7 +41,7 @@ function getkey(server_number, keyType = "public") {
         // also the request must be coming for public keys => can't request private before public
         const fileExists = fs.existsSync(`keys/${server_number}/${keyType}_key.pem`)
         if (!fileExists && keyType == "public") {
-            console.log("Direcotry doesnt exist")
+            console.log("Directory doesnt exist")
             if (!generatePublicAndPrivateKeys(server_number)) {
                 // Throw an Error incase of failure;
                 throw new Error("Failed to generate keys");
