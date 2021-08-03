@@ -1,12 +1,12 @@
 const { Router } = require("express");
 const { getkey } = require("../generateKeys");
-const crypto = require("crypto");
+const { encryptDataWithpublicKey, decryptData } = require("../sendEncryptedDataExample");
 const router = Router();
 
 
 /**
  * @todo Add CronJob to generate new keys every 3 or 2 days;
- */
+*/
 router.get("/public", (req, res) => {
     try {
         const server_number = req.query.server;
@@ -29,7 +29,6 @@ router.post("/decrypt", (req, res) => {
         if (!data) {
             throw new Error("Data doesn't exist");
         }
-        const encryptedData = Buffer.from(data, "base64");
         const server_number = req.query.server;
         if (!server_number) {
             throw new Error("expected server number");
@@ -40,17 +39,27 @@ router.post("/decrypt", (req, res) => {
         if (!privateKey) {
             throw new Error(`Server ${server_number} doesn't have keys`);
         }
+        const decryptedData = decryptData(req.body.data, privateKey);
+        res.send({ data: decryptedData });
 
-        const decryptedData = crypto.privateDecrypt({
-            key: privateKey,
-            padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-            oaepHash: "sha256",
-        }, encryptedData);
-        console.log(decryptedData.toString("ascii"));
-        return res.sendStatus(200);
     } catch (e) {
         console.log(e.message);
         res.status(400).send({ message: "Something went wrong while decrypting the data" });
     }
 });
+
+
+router.post("/encrypt", async (req, res, next) => {
+    try {
+        const public_key = req.body.public_key;
+        const data = req.body.data;
+        const encryptedData = encryptDataWithpublicKey(public_key, data);
+
+        console.log(encryptedData);
+        res.send({ data: encryptedData });
+    } catch (e) {
+        console.log(e.message);
+        res.status(400).send({ message: "Something went wrong while decrypting the data" });
+    }
+})
 module.exports = router;

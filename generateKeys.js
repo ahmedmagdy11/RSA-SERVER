@@ -9,7 +9,7 @@ function generatePublicAndPrivateKeys(server_number) {
             throw new Error("expected server_number to be a number");
         }
         const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
-            modulusLength: 2048,
+            modulusLength: 1024,
         });
         const public_key = publicKey.export({ format: "pem", type: "pkcs1" });
         const private_key = privateKey.export({ format: "pem", type: "pkcs1" });
